@@ -129,7 +129,12 @@ class Property():
     def __init__(self, name):
         self.name = name
         self.address = ""
-        self.income = 0
+        self.rent = 0
+        self.laundry = 0
+        self.storage = 0
+        self.parking = 0
+        self.misc_income = 0
+        self.total_income = 0
         self.individual_expenses = {}
         self.total_expenses = 0
         self.c_flow = 0
@@ -143,12 +148,12 @@ class Property():
         self.generate_info()
 
     def __repr__(self):
-        return f'{self.name.title()}: makes ${self.income} per month; ROI: {self.roi}%'
+        return f'{self.name.title()}: makes ${self.total_income} per month; ROI: {self.roi}%'
 
     def property_data(self):
         self.data['name'] = self.name
         self.data['address'] = self.address
-        self.data['monthly income'] = '$' + str(self.income)
+        self.data['monthly income'] = '$' + str(self.total_income)
         self.data['monthly expenses'] = self.individual_expenses
         self.data['total expenses'] = '$' + str(self.total_expenses)
         self.data['monthly cash flow'] = '$' + str(self.c_flow)
@@ -188,16 +193,56 @@ class Property():
     # Updating the monthy income (need to add the ability to change the monthly income after initially setting it
     # when this function is called outside of generate_info)
     def update_monthly_income(self):
+            # old, static code
+        # while True:
+        #     try:
+        #         income = float(input(f"What is your total monthly income for {self.name}? $"))
+        #         if income >= 0:
+        #             self.income = income
+        #             break
+        #         else:
+        #             print('You can not have a negative income')
+        #     except:
+        #         print('Please enter a valid sum of money for the income')
+
+        # self.rent = 0
+        # self.laundry = 0
+        # self.storage = 0
+        # self.parking = 0
+        # self.misc_income = 0
+
         while True:
             try:
-                income = float(input(f"What is your total monthly income for {self.name}? $"))
-                if income >= 0:
-                    self.income = income
-                    break
-                else:
-                    print('You can not have a negative income')
+                rent = float(input(f'How much rent do you collect for {self.name}? $'))
+                if rent <= 0:
+                    print(f'You can not have a down payment of ${rent}')
+                    continue
+                laundry = float(input(f'How much do you collect for laundry for {self.name}? (Enter 0 if none) $'))
+                if laundry < 0:
+                    print(f'You can not have closing costs of ${laundry}')
+                    continue
+                storage = float(input(f'How much do you collect for storage for {self.name}? (Enter 0 if none) $'))
+                if storage < 0:
+                    print(f'You can not have a rehab budget of ${storage}')
+                    continue
+                parking = float(input(f'How much do you collect for parking for {self.name}? (Enter 0 if none) $'))
+                if parking < 0:
+                    print(f'You can not have a rehab budget of ${parking}')
+                    continue
+                misc_income = float(input(f'How much do you collect for miscellaneous income for {self.name}? (Enter 0 if none) $'))
+                if misc_income < 0:
+                    print(f'You can not have a rehab budget of ${misc_income}')
+                    continue
+                self.rent = rent
+                self.laundry = laundry
+                self.storage = storage
+                self.parking = parking
+                self.misc_income = misc_income
+                self.total_income = rent + laundry + storage + parking + misc_income
+                print(f'The total income for {self.name} is ${self.total_income}')
+                break
             except:
-                print('Please enter a valid sum of money for the income')
+                print('Please enter valid amounts of money')
 
     # Updates the expenses dictionary, as well as totaling up the expenses while doing so
     def update_expenses(self):
@@ -237,7 +282,7 @@ class Property():
         
     # determines the current cash flow of the property
     def cash_flow(self):
-        self.c_flow = self.income - self.total_expenses
+        self.c_flow = self.total_income - self.total_expenses
         print(f'The cash flow for {self.name} is currently ${self.c_flow}')
 
     # Determines the initial investment (needs to add functionality in case user wants to update this information, and checking to make sure they want to update it)
